@@ -1,3 +1,5 @@
+library(mgcv)
+
 # Read the dataset
 df <- read.csv("data/minionderzoek.csv", sep=";")
 # Set the types
@@ -14,12 +16,6 @@ df <- df[df$country == "Belgium",]
 # Remove all attestations with empty zip codes
 df <- df[df$zip != "",]
 
-df$FRITUUR <- as.factor(df$FRITUUR)
-df$FRIGO <- as.factor(df$FRIGO)
-df$CURRYWORST <- as.factor(df$CURRYWORST)
-df$SPEL.REDUCTIE <- as.factor(df$SPEL.REDUCTIE)
-df$GRIZZLY <- as.factor(df$GRIZZLY)
-
 # Read the postal codes dataset
 df_zip <- read.csv("data/zipcode-belgium.csv",
                    header=FALSE,
@@ -28,3 +24,29 @@ df_zip = df_zip[order(df_zip[,'zip'],-df_zip[,'zip']),]
 df_zip = df_zip[!duplicated(df_zip$zip),]
 
 df <- merge(x = df, y = df_zip, by.x="zip.code", by.y="zip", all.x=TRUE)
+
+#### Frituur ####
+
+# Create a copy
+df_frituur <- df
+df_frituur$FRITUUR <- tolower(df_frituur$FRITUUR)
+
+# Limit answers
+df_frituur <- df_frituur[df_frituur$FRITUUR %in% c("de frituur", "het frituur", "het frietkot"),]
+df_frituur$FRITUUR <- as.factor(df_frituur$FRITUUR)
+levels(df_frituur$FRITUUR)
+df_frituur$coded <- as.integer(df_frituur$FRITUUR) - 1
+df_frituur$is_frituur <- df_frituur$FRITUUR %in% c("de frituur", "het frituur")
+
+fit_frituur <- gam(list(coded ~ s(lat), ~s(long)),
+                   family=multinom(K=2), data = df_frituur)
+fit_frituur <- gam(
+  is_frituur ~ s(long) + s(lat) + s(long, lat),
+  data = df_frituur,
+  family = binomial,
+  method = "REML"
+)
+
+vis.gam(fit_frituur, plot.type = "contour", too.far = 0.1)
+
+gam.check(fit_frituur)
