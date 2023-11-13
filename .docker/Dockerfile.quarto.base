@@ -1,0 +1,33 @@
+# r2u is great for fixing dependencies. I like that
+FROM eddelbuettel/r2u:22.04 as quarto_base
+
+# Install some linux libraries that R packages need
+RUN apt-get update && apt-get install -y libcurl4-openssl-dev libssl-dev libxml2-dev libodbc1
+
+# Install everything needed for Quarto
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    pandoc \
+    pandoc-citeproc \
+    curl \
+    gdebi-core \
+    && rm -rf /var/lib/apt/lists/*
+
+# Install basic dependencies
+RUN install.r \
+    remotes \
+    renv \
+    knitr \
+    rmarkdown \
+    quarto
+
+ARG QUARTO_VERSION="1.3.450"
+RUN curl -o quarto-linux-amd64.deb -L https://github.com/quarto-dev/quarto-cli/releases/download/v${QUARTO_VERSION}/quarto-${QUARTO_VERSION}-linux-amd64.deb
+#RUN curl -LO https://quarto.org/download/latest/quarto-linux-amd64.deb
+RUN gdebi --non-interactive quarto-linux-amd64.deb
+
+COPY renv.lock renv.lock
+
+RUN R -q -e "install.packages('renv', repos = c(CRAN = 'https://cloud.r-project.org'))"
+RUN R -q -e "renv::restore()"
+
+CMD ["bash"]

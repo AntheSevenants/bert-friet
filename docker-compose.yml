@@ -1,0 +1,11 @@
+version: "3"
+
+services:
+  rstudio:
+    image: "anthesevenants/bertfriet:rstudio"
+    ports: 
+      - "8787:8787"
+    environment:
+      PASSWORD: 'bertfriet'
+    volumes:
+      - .:/home/rstudio/bertfriet/

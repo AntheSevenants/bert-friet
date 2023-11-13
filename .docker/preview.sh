@@ -1,0 +1,1 @@
+docker run -p "8788:8788" --mount "type=bind,src=$(pwd),target=/app/" anthesevenants/bertfriet:preview
