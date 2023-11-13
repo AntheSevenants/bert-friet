@@ -25,6 +25,9 @@ df_zip = df_zip[!duplicated(df_zip$zip),]
 
 df <- merge(x = df, y = df_zip, by.x="zip.code", by.y="zip", all.x=TRUE)
 
+# Remove invalid zip codes
+df <- df[!is.na(df$long),]
+
 #### Frituur ####
 
 # Create a copy
@@ -47,6 +50,6 @@ fit_frituur <- gam(
   method = "REML"
 )
 
-vis.gam(fit_frituur, plot.type = "contour", too.far = 0.1)
+vis.gam(fit_frituur, view = c("long", "lat"), plot.type = "contour", too.far = 0.1)
 
 gam.check(fit_frituur)
