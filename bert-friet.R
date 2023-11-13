@@ -19,7 +19,7 @@ df <- df[df$zip != "",]
 # Read the postal codes dataset
 df_zip <- read.csv("data/zipcode-belgium.csv",
                    header=FALSE,
-                   col.names = c("zip", "name", "lat", "long"))
+                   col.names = c("zip", "name", "long", "lat"))
 df_zip = df_zip[order(df_zip[,'zip'],-df_zip[,'zip']),]
 df_zip = df_zip[!duplicated(df_zip$zip),]
 
