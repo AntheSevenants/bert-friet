@@ -132,7 +132,8 @@ plot_map <- function(df_pred, gemeenten, phenomenon) {
           color = gemeenten$prob > 0.5),
     ) +
     scale_fill_distiller(palette = "YlGnBu",
-                         labels = scales::label_percent()) +
+                         labels = scales::label_percent(),
+                         limits = c(0, 1)) +
     scale_color_manual(values = c("white", "#323232"),
                        guide = "none") +
     geom_sf(
