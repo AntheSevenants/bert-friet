@@ -133,7 +133,7 @@ plot_map <- function(df_pred, gemeenten, phenomenon) {
     ) +
     scale_fill_distiller(palette = "YlGnBu",
                          labels = scales::label_percent()) +
-    scale_color_manual(values = c("white", "black"),
+    scale_color_manual(values = c("white", "#323232"),
                        guide = "none") +
     geom_sf(
       data = provinces$geometry,
@@ -155,7 +155,7 @@ plot_map <- function(df_pred, gemeenten, phenomenon) {
     theme(legend.position = "bottom")
 }
 
- <- function(df_pred, lat, long, column) {
+nearest_point <- function(df_pred, lat, long, column) {
   # We supply the lat long coordinates to define ap point
   point <- st_point(c(long, lat)) %>% st_sfc(crs = 4326)
   
